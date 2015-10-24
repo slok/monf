@@ -16,6 +16,6 @@ RUN go get github.com/mailgun/godebug
 
 # Install project dependencies
 COPY . /tmp/monf
-#RUN cd /tmp/monf && godep restore
+RUN cd /tmp/monf && godep restore
 
 WORKDIR /go/src/github.com/slok/monf

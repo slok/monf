@@ -1,0 +1,5 @@
+{
+	"ImportPath": "github.com/slok/monf",
+	"GoVersion": "go1.5.1",
+	"Deps": []
+}
