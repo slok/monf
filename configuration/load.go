@@ -77,7 +77,7 @@ func LoadSettings(path string) {
 	fmt.Println("")
 
 	// Set debug level
-	debug := viper.GetBool(DEBUG)
+	debug := viper.GetBool(Debug)
 	if debug {
 		log.SetLevel(log.DebugLevel)
 		log.Info("Logging level: debug")

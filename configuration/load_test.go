@@ -34,7 +34,9 @@ func (suite *SettingsTestSuite) TestLoadDefaults() {
 	LoadAppDefaultSettings()
 
 	// Check default settings are loaded correctly
-	suite.Equal(defaultAppSettings[DEBUG], viper.GetBool(DEBUG))
+	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
+	suite.Equal(defaultAppSettings[ListenPort], viper.GetInt(ListenPort))
+	suite.Equal(defaultAppSettings[ListenHost], viper.GetString(ListenHost))
 
 }
 
@@ -87,7 +89,7 @@ test_setting3: true`)
 	suite.Equal(1, viper.GetInt("test_setting1"))
 	suite.Equal("batman", viper.GetString("test_setting2"))
 	suite.True(viper.GetBool("test_setting3"))
-	suite.Equal(defaultAppSettings[DEBUG], viper.GetBool(DEBUG))
+	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
 }
 
 func (suite *SettingsTestSuite) TestLoadSettingsWithoutPath() {
@@ -104,7 +106,7 @@ test_setting3: true`)
 	suite.Equal(1, viper.GetInt("test_setting1"))
 	suite.Equal("batman", viper.GetString("test_setting2"))
 	suite.True(viper.GetBool("test_setting3"))
-	suite.Equal(defaultAppSettings[DEBUG], viper.GetBool(DEBUG))
+	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
 }
 
 func (suite *SettingsTestSuite) TestLoadSettingsDebugTrue() {
@@ -114,7 +116,7 @@ func (suite *SettingsTestSuite) TestLoadSettingsDebugTrue() {
 	suite.Nil(err)
 
 	LoadSettings("")
-	suite.True(viper.GetBool(DEBUG))
+	suite.True(viper.GetBool(Debug))
 }
 
 func TestSettingsTestSuite(t *testing.T) {
