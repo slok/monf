@@ -5,7 +5,12 @@ go:
   - tip
 env:
   - GOARCH=amd64
+
+install:
+  - go get github.com/tools/godep
+
 script:
+  - godep restore
   - go test ./...
 
 notifications:
