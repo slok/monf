@@ -10,5 +10,5 @@ if [ "$($status_cmd | grep monf_monf_run | awk '{print $3}')" == "Up" ]; then
     # Run
     docker exec -it $container_name $@
 else
-    docker-compose -f $CURRENT_PATH/../docker-compose.yml -p monf run monf $@
+    docker-compose -f $CURRENT_PATH/../docker-compose.yml -p monf run --rm --service-ports monf $@
 fi
