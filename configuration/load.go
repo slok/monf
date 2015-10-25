@@ -23,6 +23,9 @@ var (
 func init() {
 	// We will use yaml settings
 	viper.SetConfigType(configType)
+
+	// start App configuration
+	LoadSettings("")
 }
 
 // LoadDefaultFilePathSettings Sets the configuration default file paths

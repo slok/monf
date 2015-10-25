@@ -37,6 +37,7 @@ func (suite *SettingsTestSuite) TestLoadDefaults() {
 	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
 	suite.Equal(defaultAppSettings[ListenPort], viper.GetInt(ListenPort))
 	suite.Equal(defaultAppSettings[ListenHost], viper.GetString(ListenHost))
+	suite.Equal(defaultAppSettings[TemplatesPath], viper.GetString(TemplatesPath))
 
 }
 
