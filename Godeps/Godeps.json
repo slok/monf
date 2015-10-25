@@ -45,6 +45,10 @@
 			"Rev": "6ac0b95f449268951dd5c100682ea687a9866ea1"
 		},
 		{
+			"ImportPath": "github.com/meatballhat/negroni-logrus",
+			"Rev": "dd89490b0057cca7fe3fa3885f82935dfd430c2e"
+		},
+		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
 			"Rev": "281073eb9eb092240d33ef253c404f1cca550309"
 		},
