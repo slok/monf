@@ -2,12 +2,12 @@ package configuration
 
 // Configuration names
 const (
-	Debug         = "debug"
-	ListenPort    = "listen-port"
-	ListenHost    = "listen-host"
-	TemplatesPath = "templates-path"
-	StaticURL     = "static-url"
-	StaticPath    = "static-path"
+	Debug         = "Debug"
+	ListenPort    = "ListenPort"
+	ListenHost    = "ListenHost"
+	TemplatesPath = "TemplatesPath"
+	StaticURL     = "StaticUrl"
+	StaticPath    = "StaticPath"
 )
 
 // Default app settings for the application

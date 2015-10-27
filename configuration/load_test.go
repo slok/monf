@@ -10,8 +10,6 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-// Define the suite, and absorb the built-in basic suite
-// functionality from testify - including assertion methods.
 type SettingsTestSuite struct {
 	suite.Suite
 	testFilePath string
@@ -93,6 +91,7 @@ test_setting3: true`)
 	suite.Equal("batman", viper.GetString("test_setting2"))
 	suite.True(viper.GetBool("test_setting3"))
 	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
+	suite.Equal(SpecificConfigPath, suite.testFilePath)
 }
 
 func (suite *SettingsTestSuite) TestLoadSettingsWithoutPath() {

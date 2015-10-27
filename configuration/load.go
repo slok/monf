@@ -20,6 +20,9 @@ var (
 	configType = "yaml"
 )
 
+// If settings loaded from a path set global to track the config file
+var SpecificConfigPath = ""
+
 func init() {
 	// We will use yaml settings
 	viper.SetConfigType(configType)
@@ -68,7 +71,11 @@ func LoadSettings(path string) {
 	// Load settings
 	if path != "" {
 		LoadFromFileSettings(path)
+		SpecificConfigPath = path
 	} else {
+		if path != "" {
+			LoadFromFileSettings(SpecificConfigPath)
+		}
 		LoadDefaultFilePathSettings()
 	}
 	LoadAppDefaultSettings()
