@@ -9,8 +9,21 @@ import (
 func ResetSettings() {
 	log.Debug("Resetting all the settings")
 	viper.Reset()
+
+	// We will use yaml settings
 	viper.SetConfigType(configType)
-	LoadSettings("")
+
+	// Get the settigns file from env var
+	viper.SetEnvPrefix("monf")
+	viper.BindEnv(SettingsPath)
+
+	// start App configuration
+	// TODO: Specify settings file
+	filePath := ""
+	if SpecificConfigPath != "" {
+		filePath = SpecificConfigPath
+	}
+	LoadSettings(filePath)
 }
 
 // OverrideSettings overrides the passed ones, useful for tests

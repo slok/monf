@@ -18,6 +18,7 @@ func TestSettingsLoad(t *testing.T) {
 	Convey("Given a unconfigured app", t, func() {
 
 		// Reset settings on each test
+		os.Setenv("MONF_SETTINGS", "")
 		viper.Reset()
 		viper.SetConfigType(configType)
 
@@ -101,6 +102,17 @@ test_setting3: true`)
 					So(viper.GetString("test_setting2"), ShouldEqual, "batman")
 					So(viper.GetBool("test_setting3"), ShouldBeTrue)
 					So(testFilePath, ShouldEqual, SpecificConfigPath)
+				})
+			})
+			Convey("When loading the settings file location fron an env var", func() {
+				os.Setenv("MONF_SETTINGS", testFilePath)
+				LoadSettings("")
+
+				Convey("The file settings should be loaded", func() {
+					So(viper.GetString(SettingsPath), ShouldEqual, testFilePath)
+					So(viper.GetInt("test_setting1"), ShouldEqual, 1)
+					So(viper.GetString("test_setting2"), ShouldEqual, "batman")
+					So(viper.GetBool("test_setting3"), ShouldBeTrue)
 				})
 			})
 		})

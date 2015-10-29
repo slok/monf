@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 
 	log "github.com/Sirupsen/logrus"
@@ -23,16 +24,7 @@ var (
 var SpecificConfigPath = ""
 
 func init() {
-	// We will use yaml settings
-	viper.SetConfigType(configType)
-
-	// Get the settigns file from env var
-	viper.SetEnvPrefix("monf")
-	viper.BindEnv(SettingsPath)
-	settingsFile := viper.GetString(SettingsPath)
-
-	// start App configuration
-	LoadSettings(settingsFile)
+	ResetSettings()
 }
 
 // LoadDefaultFilePathSettings Sets the configuration default file paths
@@ -71,17 +63,27 @@ func LoadAppDefaultSettings() {
 }
 
 // LoadSettings Load all the app settings
+// If specific path then don't look at the env var, nor default places
 func LoadSettings(path string) {
-	// Load settings
+
+	// 1 - Default settings
+	LoadAppDefaultSettings()
+
+	// 2 - Specific file settings
 	if path != "" {
 		LoadFromFileSettings(path)
+		SpecificConfigPath = path
 	} else {
-		if path != "" {
-			LoadFromFileSettings(SpecificConfigPath)
+		// 3 - Env var settings file
+		envSettingsFile := viper.GetString(SettingsPath)
+		if envSettingsFile != "" {
+			fmt.Println(envSettingsFile)
+			LoadFromFileSettings(envSettingsFile)
+		} else { // 4 finally load from one of the default places
+			LoadDefaultFilePathSettings()
 		}
-		LoadDefaultFilePathSettings()
+
 	}
-	LoadAppDefaultSettings()
 
 	// the first thing after loading the settings is to set the log level
 	ConfigureLogs()
