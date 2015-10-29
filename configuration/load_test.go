@@ -21,6 +21,8 @@ func TestSettingsLoad(t *testing.T) {
 		os.Setenv("MONF_SETTINGS", "")
 		viper.Reset()
 		viper.SetConfigType(configType)
+		viper.SetEnvPrefix("monf")
+		viper.BindEnv(SettingsPath)
 
 		//---------------------------------------------------- Test LoadDefaults
 		Convey("When loading the default settings", func() {
@@ -108,12 +110,16 @@ test_setting3: true`)
 				os.Setenv("MONF_SETTINGS", testFilePath)
 				LoadSettings("")
 
-				Convey("The file settings should be loaded", func() {
+				Convey("The env var location file settings should be loaded", func() {
 					So(viper.GetString(SettingsPath), ShouldEqual, testFilePath)
 					So(viper.GetInt("test_setting1"), ShouldEqual, 1)
 					So(viper.GetString("test_setting2"), ShouldEqual, "batman")
 					So(viper.GetBool("test_setting3"), ShouldBeTrue)
 				})
+			})
+			Reset(func() {
+				SpecificConfigPath = ""
+				os.Remove(testFilePath)
 			})
 		})
 
@@ -121,6 +127,7 @@ test_setting3: true`)
 		Reset(func() {
 			os.Remove("./settings.yaml")
 			os.Remove(testFilePath)
+			SpecificConfigPath = ""
 		})
 	})
 }

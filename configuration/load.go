@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 
 	log "github.com/Sirupsen/logrus"
@@ -77,7 +76,6 @@ func LoadSettings(path string) {
 		// 3 - Env var settings file
 		envSettingsFile := viper.GetString(SettingsPath)
 		if envSettingsFile != "" {
-			fmt.Println(envSettingsFile)
 			LoadFromFileSettings(envSettingsFile)
 		} else { // 4 finally load from one of the default places
 			LoadDefaultFilePathSettings()
