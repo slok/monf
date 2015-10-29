@@ -2,7 +2,6 @@ package configuration
 
 // Basic imports
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -21,7 +20,6 @@ func TestSettingsLoad(t *testing.T) {
 		// Reset settings on each test
 		viper.Reset()
 		viper.SetConfigType(configType)
-		fmt.Println("Hi")
 
 		//---------------------------------------------------- Test LoadDefaults
 		Convey("When loading the default settings", func() {

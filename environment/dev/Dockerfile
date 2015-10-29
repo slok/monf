@@ -17,6 +17,8 @@ RUN go get github.com/mailgun/godebug
 # Install goconvey for testing
 RUN go get github.com/smartystreets/goconvey
 
+ENV MONF_SETTINGS /go/src/github.com/slok/monf/environment/dev/settings.yaml
+
 # Install project dependencies
 COPY . /tmp/monf
 RUN cd /tmp/monf && godep restore

@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 
 	log "github.com/Sirupsen/logrus"
@@ -20,15 +19,20 @@ var (
 	configType = "yaml"
 )
 
-// If settings loaded from a path set global to track the config file
+// SpecificConfigPath will be the global var to track the custom config file
 var SpecificConfigPath = ""
 
 func init() {
 	// We will use yaml settings
 	viper.SetConfigType(configType)
 
+	// Get the settigns file from env var
+	viper.SetEnvPrefix("monf")
+	viper.BindEnv(SettingsPath)
+	settingsFile := viper.GetString(SettingsPath)
+
 	// start App configuration
-	LoadSettings("")
+	LoadSettings(settingsFile)
 }
 
 // LoadDefaultFilePathSettings Sets the configuration default file paths
@@ -51,9 +55,10 @@ func LoadFromFileSettings(path string) {
 	data, err := ioutil.ReadFile(path)
 
 	if err != nil {
-		log.Warning("Error loading '%s' settings file", path)
+		log.Warningf("Error loading '%s' settings file", path)
 	} else {
 		viper.ReadConfig(bytes.NewBuffer(data))
+		SpecificConfigPath = path
 	}
 
 }
@@ -63,7 +68,6 @@ func LoadAppDefaultSettings() {
 	for k, v := range defaultAppSettings {
 		viper.SetDefault(k, v)
 	}
-	log.Info("Loaded default settings")
 }
 
 // LoadSettings Load all the app settings
@@ -71,7 +75,6 @@ func LoadSettings(path string) {
 	// Load settings
 	if path != "" {
 		LoadFromFileSettings(path)
-		SpecificConfigPath = path
 	} else {
 		if path != "" {
 			LoadFromFileSettings(SpecificConfigPath)
@@ -80,19 +83,11 @@ func LoadSettings(path string) {
 	}
 	LoadAppDefaultSettings()
 
+	// the first thing after loading the settings is to set the log level
+	ConfigureLogs()
+
 	log.Info("Loaded Settings: ")
 	for k, v := range viper.AllSettings() {
 		log.Infof(" - %s: %v", k, v)
-	}
-	fmt.Println("")
-
-	// Set debug level
-	debug := viper.GetBool(Debug)
-	if debug {
-		log.SetLevel(log.DebugLevel)
-		log.Info("Logging level: debug")
-	} else {
-		log.SetLevel(log.InfoLevel)
-		log.Info("Logging level: info")
 	}
 }
