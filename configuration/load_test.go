@@ -12,9 +12,6 @@ import (
 )
 
 func TestSettingsLoad(t *testing.T) {
-	// test suite globals
-	testFilePath := "/tmp/monf_test.yml"
-
 	Convey("Given a unconfigured app", t, func() {
 
 		// Reset settings on each test
@@ -80,6 +77,8 @@ test_setting3: true`)
 		})
 		//---------------------------------------------- Custom file path tests
 		Convey("And creating a settings file on a custom path", func() {
+			testFilePath := "/tmp/monf_test.yml"
+
 			testData := []byte(`test_setting1: 1
 test_setting2: batman
 test_setting3: true`)
@@ -126,7 +125,6 @@ test_setting3: true`)
 		//------------------------------------------------------------- Teardown
 		Reset(func() {
 			os.Remove("./settings.yaml")
-			os.Remove(testFilePath)
 			SpecificConfigPath = ""
 		})
 	})
