@@ -2,125 +2,115 @@ package configuration
 
 // Basic imports
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
 
+	log "github.com/Sirupsen/logrus"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/suite"
 )
 
-type SettingsTestSuite struct {
-	suite.Suite
-	testFilePath string
-}
+func TestSettingsLoad(t *testing.T) {
+	// test suite globals
+	testFilePath := "/tmp/monf_test.yml"
 
-func (suite *SettingsTestSuite) SetupTest() {
-	suite.testFilePath = "/tmp/monf_test.yml"
+	Convey("Given a unconfigured app", t, func() {
 
-	// Reset settings on each test
-	viper.Reset()
-	viper.SetConfigType(configType)
-}
-func (suite *SettingsTestSuite) TearDownSuite() {
-	os.Remove("./settings.yaml")
-	os.Remove(suite.testFilePath)
-}
+		// Reset settings on each test
+		viper.Reset()
+		viper.SetConfigType(configType)
+		fmt.Println("Hi")
 
-func (suite *SettingsTestSuite) TestLoadDefaults() {
-	// Load default settings
-	LoadAppDefaultSettings()
+		//---------------------------------------------------- Test LoadDefaults
+		Convey("When loading the default settings", func() {
+			LoadAppDefaultSettings()
 
-	// Check default settings are loaded correctly
-	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
-	suite.Equal(defaultAppSettings[ListenPort], viper.GetInt(ListenPort))
-	suite.Equal(defaultAppSettings[ListenHost], viper.GetString(ListenHost))
-	suite.Equal(defaultAppSettings[TemplatesPath], viper.GetString(TemplatesPath))
-	suite.Equal(defaultAppSettings[StaticURL], viper.GetString(StaticURL))
-	suite.Equal(defaultAppSettings[StaticPath], viper.GetString(StaticPath))
+			Convey("Then the default settings should be loaded", func() {
+				So(viper.GetBool(Debug), ShouldEqual, defaultAppSettings[Debug])
+				So(viper.GetInt(ListenPort), ShouldEqual, defaultAppSettings[ListenPort])
+				So(viper.GetString(ListenHost), ShouldEqual, defaultAppSettings[ListenHost])
+				So(viper.GetString(TemplatesPath), ShouldEqual, defaultAppSettings[TemplatesPath])
+				So(viper.GetString(StaticURL), ShouldEqual, defaultAppSettings[StaticURL])
+				So(viper.GetString(StaticPath), ShouldEqual, defaultAppSettings[StaticPath])
+			})
+		})
 
-}
+		//----------------------------------------- Test LoadDefaults debug true
+		Convey("And creating a settings file with the debug setting active", func() {
+			testData := []byte(`debug: true`)
+			err := ioutil.WriteFile("./settings.yaml", testData, 0644)
+			So(err, ShouldBeNil)
+			LoadSettings("")
 
-func (suite *SettingsTestSuite) TestLoadFileDefaults() {
-	// Create a file with custom settings
-	testData := []byte(`test_setting1: 1
+			Convey("The log debug level should be debug", func() {
+				So(log.GetLevel(), ShouldEqual, log.DebugLevel)
+			})
+		})
+
+		//--------------------------------------------- Default File path tests
+		Convey("And creating a settings file on default path", func() {
+			testData := []byte(`test_setting1: 1
 test_setting2: batman
 test_setting3: true`)
-	err := ioutil.WriteFile("./settings.yaml", testData, 0644)
-	suite.Nil(err)
+			err := ioutil.WriteFile("./settings.yaml", testData, 0644)
+			So(err, ShouldBeNil)
 
-	LoadDefaultFilePathSettings()
-
-	// Check default settings are loaded correctly
-	suite.Equal(1, viper.GetInt("test_setting1"))
-	suite.Equal("batman", viper.GetString("test_setting2"))
-	suite.True(viper.GetBool("test_setting3"))
-
-}
-
-func (suite *SettingsTestSuite) TestLoadFromFile() {
-	// Create a file with custom settings
-	testData := []byte(`test_setting1: 1
+			//---------------------------------------- Test LoadFilePathDefaults
+			Convey("When loading the settings file from a preset default path", func() {
+				LoadDefaultFilePathSettings()
+				Convey("The file settings should be loaded", func() {
+					So(viper.GetInt("test_setting1"), ShouldEqual, 1)
+					So(viper.GetString("test_setting2"), ShouldEqual, "batman")
+					So(viper.GetBool("test_setting3"), ShouldBeTrue)
+				})
+			})
+			//----------------------------------------------- Test LoadSettings
+			Convey("When loading defaults and the settings file from a preset default path", func() {
+				LoadSettings("")
+				Convey("The file settings and the app default settings should be loaded", func() {
+					So(viper.GetInt("test_setting1"), ShouldEqual, 1)
+					So(viper.GetString("test_setting2"), ShouldEqual, "batman")
+					So(viper.GetBool("test_setting3"), ShouldBeTrue)
+					So(viper.GetBool(Debug), ShouldEqual, defaultAppSettings[Debug])
+				})
+			})
+		})
+		//---------------------------------------------- Custom file path tests
+		Convey("And creating a settings file on a custom path", func() {
+			testData := []byte(`test_setting1: 1
 test_setting2: batman
 test_setting3: true`)
-	err := ioutil.WriteFile(suite.testFilePath, testData, 0644)
-	suite.Nil(err)
+			err := ioutil.WriteFile(testFilePath, testData, 0644)
+			So(err, ShouldBeNil)
 
-	// Load default settings
-	LoadFromFileSettings(suite.testFilePath)
+			//--------------------------------------- Test LoadFromFileSettings
+			Convey("When loading the settings file from a custom path", func() {
+				LoadFromFileSettings(testFilePath)
 
-	// Check default settings are loaded correctly
-	suite.Equal(1, viper.GetInt("test_setting1"))
-	suite.Equal("batman", viper.GetString("test_setting2"))
-	suite.True(viper.GetBool("test_setting3"))
+				Convey("The file settings should be loaded", func() {
+					So(viper.GetInt("test_setting1"), ShouldEqual, 1)
+					So(viper.GetString("test_setting2"), ShouldEqual, "batman")
+					So(viper.GetBool("test_setting3"), ShouldBeTrue)
+				})
+			})
+			//----------------------------------------------- Test LoadSettings
+			Convey("When loading defaults and the settings file from a custom path", func() {
+				LoadSettings(testFilePath)
+				Convey("The file settings and the app default settings should be loaded", func() {
+					So(viper.GetInt("test_setting1"), ShouldEqual, 1)
+					So(viper.GetString("test_setting2"), ShouldEqual, "batman")
+					So(viper.GetBool("test_setting3"), ShouldBeTrue)
+					So(testFilePath, ShouldEqual, SpecificConfigPath)
+				})
+			})
+		})
 
-}
-
-func (suite *SettingsTestSuite) TestLoadSettingsWithPath() {
-	// Create a file with custom settings
-	testData := []byte(`test_setting1: 1
-test_setting2: batman
-test_setting3: true`)
-	err := ioutil.WriteFile(suite.testFilePath, testData, 0644)
-	suite.Nil(err)
-
-	LoadSettings(suite.testFilePath)
-
-	// Check default settings are loaded correctly
-	suite.Equal(1, viper.GetInt("test_setting1"))
-	suite.Equal("batman", viper.GetString("test_setting2"))
-	suite.True(viper.GetBool("test_setting3"))
-	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
-	suite.Equal(SpecificConfigPath, suite.testFilePath)
-}
-
-func (suite *SettingsTestSuite) TestLoadSettingsWithoutPath() {
-	// Create a file with custom settings
-	testData := []byte(`test_setting1: 1
-test_setting2: batman
-test_setting3: true`)
-	err := ioutil.WriteFile("./settings.yaml", testData, 0644)
-	suite.Nil(err)
-
-	LoadSettings("")
-
-	// Check default settings are loaded correctly
-	suite.Equal(1, viper.GetInt("test_setting1"))
-	suite.Equal("batman", viper.GetString("test_setting2"))
-	suite.True(viper.GetBool("test_setting3"))
-	suite.Equal(defaultAppSettings[Debug], viper.GetBool(Debug))
-}
-
-func (suite *SettingsTestSuite) TestLoadSettingsDebugTrue() {
-	// Create a file with custom settings
-	testData := []byte(`debug: true`)
-	err := ioutil.WriteFile("./settings.yaml", testData, 0644)
-	suite.Nil(err)
-
-	LoadSettings("")
-	suite.True(viper.GetBool(Debug))
-}
-
-func TestSettingsTestSuite(t *testing.T) {
-	suite.Run(t, new(SettingsTestSuite))
+		//------------------------------------------------------------- Teardown
+		Reset(func() {
+			os.Remove("./settings.yaml")
+			os.Remove(testFilePath)
+		})
+	})
 }

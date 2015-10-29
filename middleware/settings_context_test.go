@@ -8,45 +8,41 @@ import (
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/context"
 	"github.com/slok/monf/configuration"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/suite"
 )
 
-type SettingsContextTestSuite struct {
-	suite.Suite
-}
+func TestSettingsContextMiddleware(t *testing.T) {
+	Convey("Given a server with settings context middleware", t, func() {
+		// Reset settings on each test
+		configuration.ResetSettings()
 
-func (suite *SettingsContextTestSuite) SetupTest() {
-	// Reset settings on each test
-	configuration.ResetSettings()
-}
+		// Set the negroni server with our middleware
+		response := httptest.NewRecorder()
+		n := negroni.New()
+		n.Use(NewSettingsContext())
+		req, _ := http.NewRequest("GET", "http://localhost:3000/", nil)
 
-func (suite *SettingsContextTestSuite) TestSettingsContext() {
-	// Create a request recorder
-	response := httptest.NewRecorder()
+		// Check no context before running the middleware
+		Convey("The starting context should be empty", func() {
+			So(len(context.GetAll(req)), ShouldEqual, 0)
+		})
 
-	// Set the negroni server with our middleware
-	n := negroni.New()
-	n.Use(NewSettingsContext())
+		Convey("When making a request", func() {
 
-	// Create the request
-	req, err := http.NewRequest("GET", "http://localhost:3000/", nil)
-	suite.Nil(err)
+			n.ServeHTTP(response, req)
+			requestContextAfter := context.GetAll(req)
+			settings := viper.AllSettings()
 
-	// Check no context before running the middleware
-	suite.Equal(0, len(context.GetAll(req)))
+			Convey("The context should be the same as the app settings", func() {
+				So(len(requestContextAfter), ShouldEqual, len(requestContextAfter))
+				for k := range settings {
+					So(requestContextAfter[k], ShouldEqual, settings[k])
+				}
+			})
+		})
 
-	// Make call and check context
-	n.ServeHTTP(response, req)
-	requestContextAfter := context.GetAll(req)
-	settings := viper.AllSettings()
-
-	suite.Equal(len(settings), len(requestContextAfter))
-	for k := range settings {
-		suite.Equal(settings[k], requestContextAfter[k])
-	}
-}
-
-func TestSettingsContextTestSuite(t *testing.T) {
-	suite.Run(t, new(SettingsContextTestSuite))
+		Reset(func() {
+		})
+	})
 }

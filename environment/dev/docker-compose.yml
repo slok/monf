@@ -4,6 +4,7 @@ monf:
   ports:
     - "3000:3000"
     - "6060:6060"
+    - "8080:8080"
   volumes:
     - ./../../:/go/src/github.com/slok/monf
 #  links:

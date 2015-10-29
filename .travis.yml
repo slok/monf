@@ -8,11 +8,11 @@ env:
 
 install:
   - go get github.com/tools/godep
-  - go get github.com/stretchr/testify
+  - go get github.com/smartystreets/goconvey
 
 script:
   - godep restore
-  - go test ./...
+  - go test ./... -v
 
 notifications:
   email:

@@ -14,6 +14,9 @@ RUN go get golang.org/x/tools/cmd/cover
 RUN go get github.com/axw/gocov/gocov
 RUN go get github.com/mailgun/godebug
 
+# Install goconvey for testing
+RUN go get github.com/smartystreets/goconvey
+
 # Install project dependencies
 COPY . /tmp/monf
 RUN cd /tmp/monf && godep restore
