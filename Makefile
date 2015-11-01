@@ -19,6 +19,7 @@ rm:
 
 test:
 	@./environment/dev/scripts/exec.sh go test ./...
+    #MONF_SETTINGS=`pwd`/environment/dev/settings-test.yaml go test ./... -v
 
 cmd:
 	@./environment/dev/scripts/exec.sh ${ARGS}

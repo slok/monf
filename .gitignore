@@ -25,3 +25,10 @@ _testmain.go
 
 # Godep vendoring
 Godeps/_workspace
+
+# Node dependencies
+node_modules/
+
+# Static bower
+bower_components/
+dist/
